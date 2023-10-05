@@ -8,6 +8,16 @@ class AutoAEsquivar {
 	method bajar() {
 		position = position.down(1)
 	}
+	
+	method desaparecer() {
+		game.removeVisual(self)
+	}
+	
+	method chequear() {
+		game.onTick ( 5000, "chequear", {
+			if (position.y() < 1) { self.desaparecer() }
+		} )
+	}
 }
 
 object autosAEsquivar {
@@ -15,13 +25,13 @@ object autosAEsquivar {
 	var property cantAutos = 0
 	
 	method spawnAuto() {
-		listaAutos.add( new AutoAEsquivar(position = game.at(cantAutos,11)) )
+		listaAutos.add( new AutoAEsquivar(position = game.at(5.randomUpTo(8),11)) )
 		cantAutos += 1
 		game.addVisual( listaAutos.last() )
 	}
 	
 	method bajarAutos() {
-		listaAutos.map{i => i.bajar()}
+		listaAutos.forEach{ i => i.bajar() }
 	}
 }
 
@@ -49,6 +59,6 @@ object pantalla {
 	method agregarVisuales() {
 		game.addVisualCharacter(auto)
 		game.onTick( 2000, "spawn", {autosAEsquivar.spawnAuto()} )
-		game.onTick( 4000, "bajar", {autosAEsquivar.bajarAutos()} )
+		game.onTick( 500, "bajar", {autosAEsquivar.bajarAutos()} )
 	}
 }
