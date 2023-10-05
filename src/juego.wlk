@@ -10,6 +10,21 @@ class AutoAEsquivar {
 	}
 }
 
+object autosAEsquivar {
+	var property listaAutos = []
+	var property cantAutos = 0
+	
+	method spawnAuto() {
+		listaAutos.add( new AutoAEsquivar(position = game.at(cantAutos,11)) )
+		cantAutos += 1
+		game.addVisual( listaAutos.last() )
+	}
+	
+	method bajarAutos() {
+		listaAutos.map{i => i.bajar()}
+	}
+}
+
 object auto {
 	var property position = game.center()
 	
@@ -17,13 +32,11 @@ object auto {
 }
 
 object pantalla {
-	const listaAutos = []
-	var cantAutos = 0
-	
+
 	method inicializar() {
 		self.configuracionPredeterminada()
 		self.agregarVisuales()
-		//self.definirColisiones()
+		// TODO: self.definirColisiones()
 	}
 	
 	method configuracionPredeterminada() {
@@ -35,17 +48,7 @@ object pantalla {
 	
 	method agregarVisuales() {
 		game.addVisualCharacter(auto)
-		game.onTick( 2000, "spawn", {self.spawnAuto()} )
-		game.onTick( 4000, "bajar", {self.bajarAutos()} )
-	}
-	
-	method spawnAuto() {
-		listaAutos.add( new AutoAEsquivar(position = game.at(cantAutos,11)) )
-		cantAutos += 1
-		game.addVisual( listaAutos.last() )
-	}
-	
-	method bajarAutos() {
-		listaAutos.map{i => i.bajar()}
+		game.onTick( 2000, "spawn", {autosAEsquivar.spawnAuto()} )
+		game.onTick( 4000, "bajar", {autosAEsquivar.bajarAutos()} )
 	}
 }
