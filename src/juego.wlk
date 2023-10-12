@@ -6,32 +6,30 @@ class AutoAEsquivar {
 	method image() = "img/auto-rotado-azul.png"
 	
 	method bajar() {
-		position = position.down(1)
-	}
-	
-	method desaparecer() {
-		game.removeVisual(self)
-	}
-	
-	method chequear() {
-		game.onTick ( 5000, "chequear", {
-			if (position.y() < 1) { self.desaparecer() }
-		} )
+		game.onTick( 1000, "bajar", {position = position.down(1)} )
 	}
 }
 
 object autosAEsquivar {
 	var property listaAutos = []
-	var property cantAutos = 0
 	
 	method spawnAuto() {
 		listaAutos.add( new AutoAEsquivar(position = game.at(5.randomUpTo(8),11)) )
-		cantAutos += 1
 		game.addVisual( listaAutos.last() )
+		listaAutos.last().bajar()
 	}
 	
 	method bajarAutos() {
 		listaAutos.forEach{ i => i.bajar() }
+	}
+	
+	method chequearAutos() { // Se analiza si algún auto ya no está en pantalla para borrarlo.
+		listaAutos.forEach{ i => if (i.position().y() < 1) {self.despawnAuto(i)} }
+	}
+	
+	method despawnAuto(auto) {
+		game.removeVisual(auto)
+		listaAutos.remove(auto) // Se borra el índice del auto para que no haya referencia al objeto y se libere memoria.
 	}
 }
 
@@ -46,6 +44,7 @@ object pantalla {
 	method inicializar() {
 		self.configuracionPredeterminada()
 		self.agregarVisuales()
+		self.gestionarAutos()
 		// TODO: self.definirColisiones()
 	}
 	
@@ -58,7 +57,11 @@ object pantalla {
 	
 	method agregarVisuales() {
 		game.addVisualCharacter(auto)
+	}
+	
+	method gestionarAutos() {
 		game.onTick( 2000, "spawn", {autosAEsquivar.spawnAuto()} )
-		game.onTick( 500, "bajar", {autosAEsquivar.bajarAutos()} )
+		//game.onTick( 500, "bajar", {autosAEsquivar.bajarAutos()} )
+		game.onTick( 5000, "chequearQueEstenEnPantalla", {autosAEsquivar.chequearAutos()} )
 	}
 }
