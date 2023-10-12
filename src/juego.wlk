@@ -37,9 +37,9 @@ object cosasQueCaen {
 		listaCosas.forEach{ i => if (i.position().y() < 1) {self.despawnCosa(i)} }
 	}
 	
-	method despawnCosa(auto) {
-		game.removeVisual(auto) // Se borra el índice de la cosa para que no haya referencia al
-		listaCosas.remove(auto) //objeto y se libere memoria.
+	method despawnCosa(cosa) {
+		game.removeVisual(cosa) // Se borra el índice de la cosa para que no haya referencia al
+		listaCosas.remove(cosa) //objeto y se libere memoria.
 	}
 	
 	method spawnAuto() {
@@ -52,6 +52,7 @@ object cosasQueCaen {
 		listaCosas.add( new Linea_L() )
 		game.addVisual( listaCosas.last() )
 		listaCosas.last().bajar()
+		
 		listaCosas.add( new Linea_R() )
 		game.addVisual( listaCosas.last() )
 		listaCosas.last().bajar()
@@ -69,10 +70,10 @@ object tablero {
 	
 	method position() = game.at(6, game.height()-1)
 	
-	method text() = "Puntos: " + puntaje
+	method text() = "Puntos: " + puntaje.toString()
 	
 	method calcularPuntos() {
-		game.onTick( 1000, "Sumar Punto", {puntaje += 2} )
+		game.onTick( 7500, "Sumar Punto", {puntaje += 1} )
 	}
 }
 
@@ -81,7 +82,7 @@ object pantalla {
 	method inicializar() {
 		self.configuracionPredeterminada()
 		self.agregarVisuales()
-		self.gestionarAutos()
+		self.gestionarCosas()
 		tablero.calcularPuntos()
 		// TODO: self.definirColisiones()
 	}
@@ -95,11 +96,12 @@ object pantalla {
 	
 	method agregarVisuales() {
 		game.addVisualCharacter(auto)
+		game.addVisual(tablero)
 	}
 	
-	method gestionarAutos() {
-		game.onTick( 2500, "spawn", {cosasQueCaen.spawnAuto()} )
+	method gestionarCosas() {
+		game.onTick( 1500, "spawn", {cosasQueCaen.spawnAuto()} )
 		game.onTick( 1500, "linea", {cosasQueCaen.spawnLinea()} )
-		game.onTick( 4000, "chequearQueEstenEnPantalla", {cosasQueCaen.chequearCosas()} )
+		game.onTick( 2000, "chequearQueEstenEnPantalla", {cosasQueCaen.chequearCosas()} )
 	}
 }
