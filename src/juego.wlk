@@ -6,30 +6,55 @@ class AutoAEsquivar {
 	method image() = "img/auto-rotado-azul.png"
 	
 	method bajar() {
-		game.onTick( 1000, "bajar", {position = position.down(1)} )
+		game.onTick( 500, "bajar", {position = position.down(1)} )
 	}
 }
 
-object autosAEsquivar {
-	var property listaAutos = []
+class Linea_L {
+	var property position = game.at(5,11)
+	
+	method image() = "img/linea-l.png"
+	
+	method bajar() {
+		game.onTick( 250, "bajar", {position = position.down(1)} )
+	}
+}
+
+class Linea_R {
+	var property position = game.at(6,11)
+	
+	method image() = "img/linea-r.png"
+	
+	method bajar() {
+		game.onTick( 250, "bajar", {position = position.down(1)} )
+	}
+}
+
+object cosasQueCaen {
+	var property listaCosas = []
 	
 	method spawnAuto() {
-		listaAutos.add( new AutoAEsquivar(position = game.at(5.randomUpTo(8),11)) )
-		game.addVisual( listaAutos.last() )
-		listaAutos.last().bajar()
+		listaCosas.add( new AutoAEsquivar(position = game.at(4.randomUpTo(8),11)) )
+		game.addVisual( listaCosas.last() )
+		listaCosas.last().bajar()
 	}
 	
-	method bajarAutos() {
-		listaAutos.forEach{ i => i.bajar() }
+	method chequearCosas() { // Se analiza si alguna de las cosas ya no está en pantalla para borrarla.
+		listaCosas.forEach{ i => if (i.position().y() < 1) {self.despawnCosa(i)} }
 	}
 	
-	method chequearAutos() { // Se analiza si algún auto ya no está en pantalla para borrarlo.
-		listaAutos.forEach{ i => if (i.position().y() < 1) {self.despawnAuto(i)} }
+	method despawnCosa(auto) {
+		game.removeVisual(auto) // Se borra el índice del auto para que no haya referencia al
+		listaCosas.remove(auto) //objeto y se libere memoria.
 	}
 	
-	method despawnAuto(auto) {
-		game.removeVisual(auto)
-		listaAutos.remove(auto) // Se borra el índice del auto para que no haya referencia al objeto y se libere memoria.
+	method spawnLinea() {
+		listaCosas.add( new Linea_L() )
+		game.addVisual( listaCosas.last() )
+		listaCosas.last().bajar()
+		listaCosas.add( new Linea_R() )
+		game.addVisual( listaCosas.last() )
+		listaCosas.last().bajar()
 	}
 }
 
@@ -60,8 +85,8 @@ object pantalla {
 	}
 	
 	method gestionarAutos() {
-		game.onTick( 2000, "spawn", {autosAEsquivar.spawnAuto()} )
-		//game.onTick( 500, "bajar", {autosAEsquivar.bajarAutos()} )
-		game.onTick( 5000, "chequearQueEstenEnPantalla", {autosAEsquivar.chequearAutos()} )
+		game.onTick( 2500, "spawn", {cosasQueCaen.spawnAuto()} )
+		game.onTick( 1500, "linea", {cosasQueCaen.spawnLinea()} )
+		game.onTick( 2000, "chequearQueEstenEnPantalla", {cosasQueCaen.chequearCosas()} )
 	}
 }
