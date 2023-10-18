@@ -4,6 +4,5 @@ import wollok.game.*
 program videojuego {
 
 	pantalla.inicializar()
-	cosasQueCaen.gestionarCosas()
 	game.start()
 }
